@@ -5,9 +5,11 @@ import { getSortedPostsData } from "@/lib/posts";
 import axios from "axios";
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
+import Date from "../components/date";
 
 export async function getStaticProps() {
-  const allPostsData = getSortedPostsData();
+  const allPostsData = await getSortedPostsData();
   const animeData = await axios.get("https://nekos.best/api/v2/hug?amount=10").then(({ data }) => data.results);
 
   return {
@@ -15,7 +17,7 @@ export async function getStaticProps() {
   };
 }
 
-export default function Home({ allPostsData,animeData }) {
+export default function Home({ allPostsData, animeData }) {
   React.useEffect(() => {
     async function loadAnimes() {
       await axios
@@ -47,21 +49,20 @@ export default function Home({ allPostsData,animeData }) {
         <ul className={utilStyles.list}>
           {allPostsData.map(({ id, date, title }) => (
             <li className={utilStyles.listItem} key={id}>
-              {title}
+              <Link href={`/posts/${id}`}>{title}</Link>
               <br />
-              {id}
-              <br />
-              {date}
+              <small className={utilStyles.lightText}>
+                <Date dateString={date} />
+              </small>
             </li>
           ))}
-          {animeData.map(({ anime_name, url },index) => (
+          {animeData.map(({ anime_name, url }, index) => (
             <li className={utilStyles.listItem} key={index}>
               {anime_name}
               <br />
               {/* <img src={url} height={108} width={108} alt={anime_name} /> */}
-              <Image 
-              loader={() => url}
-              priority src={'nekos.best/api/v2/hug/013.gif'} className={utilStyles.borderCircle} height={108} width={108} alt={anime_name} />
+              <Image loader={() => url} src={"nekos.best/api/v2/hug/013.gif"} className={utilStyles.borderCircle} height={108} width={108} alt={anime_name} />
+              {/* <Image loader={() => url} priority src={"nekos.best/api/v2/hug/013.gif"} className={utilStyles.borderCircle} height={108} width={108} alt={anime_name} /> */}
             </li>
           ))}
         </ul>
